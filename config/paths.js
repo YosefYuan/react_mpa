@@ -48,6 +48,36 @@ const resolveModule = (resolveFn, filePath) => {
   return resolveFn(`${filePath}.js`);
 };
 
+// MPA config added
+const glob = require('glob');
+// 获取指定路径下的入口文件
+function getEntries(globPath) {
+  const files = glob.sync(globPath),
+    entries = {};
+  files.forEach(function (filepath) {
+    const split = filepath.split('/');
+    const name = split[split.length - 2];
+    entries[name] = './' + filepath;
+  });
+  return entries;
+}
+
+const entries = getEntries('src/**/index.js');
+
+function getIndexJs() {
+  const indexJsList = [];
+  Object.keys(entries).forEach((name) => {
+    const indexjs = resolveModule(resolveApp, `src/${name}/index`)
+    indexJsList.push({
+      name,
+      path: indexjs
+    });
+  })
+  return indexJsList;
+}
+const indexJsList = getIndexJs()
+// MPA config added end
+
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
@@ -55,7 +85,8 @@ module.exports = {
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
+  // appIndexJs: resolveModule(resolveApp, 'src/index'),
+  appIndexJs: indexJsList, //
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appTsConfig: resolveApp('tsconfig.json'),
@@ -65,6 +96,7 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrlOrPath,
+  entries //
 };
 
 

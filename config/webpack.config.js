@@ -24,7 +24,7 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-
+const customConfig = require('./custom.config');
 const postcssNormalize = require('postcss-normalize');
 
 const appPackageJson = require(paths.appPackageJson);
@@ -571,6 +571,7 @@ module.exports = function (webpackEnv) {
               chunks: [name],
               template: paths.appHtml,
               filename: name + '.html',
+              ...customConfig[name]
             },
             isEnvProduction
               ? {
